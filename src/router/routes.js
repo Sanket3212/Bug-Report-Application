@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../pages/login.vue';
 import Home from '../pages/Home.vue';
 import AdminDashboard from '../pages/AdminDashboard.vue';
-import TtesterDashboard from '../pages/TtesterDashboard.vue';
+import TtesterDashboard from '../pages/TesterDashboard.vue';
 import DeveloperDashboard from '../pages/DeveloperDashboard.vue';
 import AdminBugDashboard from 'src/pages/AdminBugDashboard.vue';
 

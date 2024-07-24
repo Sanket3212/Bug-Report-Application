@@ -56,6 +56,7 @@
     </q-page-container>
   </q-layout>
 </template>
+
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -121,9 +122,10 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .tester-layout {
-  background-color: #e0f7fa; /* Light cyan background */
+  background-color: var(--background-color); /* Background color from global styles */
   min-height: 100vh;
 }
 
@@ -139,7 +141,7 @@ export default {
 
 .dashboard-title {
   font-size: 2rem;
-  color: #00695c; /* Dark teal color */
+  color: var(--text-color); /* Color from global styles */
   margin-bottom: 16px;
 }
 
@@ -154,26 +156,26 @@ export default {
 }
 
 .bug-table th, .bug-table td {
-  border: 1px solid #dee2e6; /* Border color */
+  border: 1px solid var(--border-color); /* Border color from global styles */
   padding: 8px;
   text-align: left;
 }
 
 .bug-table th {
-  background-color: #f8f9fa; /* Header background color */
-  color: #343a40; /* Header text color */
+  background-color: var(--header-bg-color); /* Header background color from global styles */
+  color: var(--header-text-color); /* Header text color from global styles */
 }
 
 .bug-table tbody tr:nth-child(even) {
-  background-color: #f2f2f2; /* Even row background color */
+  background-color: var(--even-row-bg-color); /* Even row background color from global styles */
 }
 
 .bug-table tbody tr:nth-child(odd) {
-  background-color: #ffffff; /* Odd row background color */
+  background-color: var(--odd-row-bg-color); /* Odd row background color from global styles */
 }
 
 .bug-table tbody tr:hover {
-  background-color: #e9ecef; /* Row hover background color */
+  background-color: var(--hover-bg-color); /* Row hover background color from global styles */
 }
 
 .q-dialog {
@@ -197,18 +199,18 @@ export default {
 .form-header {
   margin-bottom: 16px;
   font-size: 1.5rem;
-  color: #00695c; /* Dark teal color */
+  color: var(--text-color); /* Color from global styles */
 }
 
 .report-btn {
-  background-color: #00796b; /* Dark teal button color */
+  background-color: var(--secondary-color); /* Button color from global styles */
   color: #fff;
   font-weight: bold;
   transition: background-color 0.3s ease;
 }
 
 .report-btn:hover {
-  background-color: #004d40; /* Darker shade on hover */
+  background-color: var(--primary-color); /* Darker shade on hover from global styles */
 }
 
 .form-actions {
@@ -236,8 +238,12 @@ export default {
 
 /* CSS Variables for Color Scheme */
 :root {
-  --primary-color: #007bff; /* Primary button color */
-  --secondary-color: #28a745; /* Secondary button color */
+  --background-color: #f0f4f8; /* Light background color */
+  --primary-color: #4a90e2; /* Primary button color */
+  --secondary-color: #50e3c2; /* Secondary button color */
+  --text-color: #333; /* Default text color */
+  --header-color: #ffffff; /* Header background color */
+  --card-background: #ffffff; /* Card background color */
   --border-color: #dee2e6; /* Border color */
   --header-bg-color: #f8f9fa; /* Header background color */
   --header-text-color: #343a40; /* Header text color */
