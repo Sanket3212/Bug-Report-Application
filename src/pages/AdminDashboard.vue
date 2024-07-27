@@ -18,9 +18,9 @@
             </div>
           </div>
           <div class="button-container">
-            <q-btn color="primary" label="Create User" @click="openCreateUserDialog" class="button-style" />
-            <q-btn color="primary" label="Show All Users" @click="showUsers" class="button-style" />
-            <q-btn color="secondary" label="See the Application" @click="goToBugDashboard" class="button-style" />
+            <q-btn color="primary" label="Create User" @click="openCreateUserDialog" class="button-style button-create-user" />
+            <q-btn color="primary" label="Show All Users" @click="showUsers" class="button-style button-show-users" />
+            <q-btn color="secondary" label="See the Application" @click="goToBugDashboard" class="button-style button-see-application" />
           </div>
           <q-dialog v-model="showUserDialog">
             <q-card>
@@ -57,11 +57,11 @@
                 <component :is="currentStep" :user="newUser" @next-step="nextStep" />
               </q-card-section>
               <q-card-actions class="card-actions">
-                <q-btn flat label="Previous" @click="previousStep" v-if="currentStep !== 'AdminFormStep1'" class="prev-btn" />
+                <q-btn flat label="Close" @click="closeCreateUserDialog" class="close-btn" />
                 <div class="spacer"></div>
+                <q-btn flat label="Previous" @click="previousStep" v-if="currentStep !== 'AdminFormStep1'" class="prev-btn" />
                 <q-btn flat label="Next" @click="nextStep" v-if="currentStep !== 'AdminFormStep3'" class="next-btn" />
                 <q-btn flat label="Create" @click="createUser" v-if="currentStep === 'AdminFormStep3'" />
-                <q-btn flat label="Close" @click="closeCreateUserDialog" class="close-btn" />
               </q-card-actions>
             </q-card>
           </q-dialog>
@@ -207,6 +207,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 /* Background Color for Layout */
 .background {
@@ -226,6 +227,7 @@ export default {
   border-radius: 8px; /* Optional: for rounded corners */
 }
 
+/* Welcome Container Styling */
 .welcome-container {
   text-align: center;
   flex: 1;
@@ -248,200 +250,100 @@ export default {
   color: #fff; /* White icon color */
 }
 
+/* Button Container Styling */
 .button-container {
   display: flex;
   flex-wrap: wrap; /* Allow buttons to wrap */
   justify-content: center;
   gap: 10px; /* Space between buttons */
+  margin-top: 20px;
 }
 
+/* Button Styling */
 .button-style {
   border-radius: 20px;
-  margin-top: 20px;
   padding: 10px 20px;
   transition: background-color 0.3s, transform 0.3s; /* Smooth transition for background and transform */
+  background-color: #007bff; /* Simple background color */
+  color: #fff; /* White text color */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+  font-weight: bold; /* Bold text */
 }
 
-/* Create User Button Styling */
-.button-create-user {
-  background-color: #007bff; /* Primary color for "Create User" button */
-  color: #fff;
-}
-
-.button-create-user:hover {
+.button-style:hover {
   background-color: #0056b3; /* Darker blue on hover */
-  transform: scale(1.05); /* Slightly enlarge button on hover */
+  transform: translateY(-2px); /* Slightly lift button on hover */
 }
 
-/* Show All Users Button Styling */
-.button-show-users {
-  background-color: #28a745; /* Green color for "Show All Users" button */
-  color: #fff;
-}
-
-.button-show-users:hover {
-  background-color: #218838; /* Darker green on hover */
-  transform: scale(1.05); /* Slightly enlarge button on hover */
-}
-
-/* See the Application Button Styling */
-.button-see-application {
-  background-color: #6c757d; /* Gray color for "See the Application" button */
-  color: #fff;
-}
-
-.button-see-application:hover {
-  background-color: #5a6268; /* Darker gray on hover */
-  transform: scale(1.05); /* Slightly enlarge button on hover */
-}
-
-/* Styling for Dialog */
+/* Dialog Card Styling */
 .create-user-card {
-  width: 90vw; /* Full width with a max-width constraint */
-  max-width: 600px; /* Maximum width for large screens */
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.create-user-header {
-  background-color: #00aaff; /* Light blue color for the header */
-  color: #fff; /* White text color for contrast */
-  padding: 16px;
-  font-size: 24px;
-  font-weight: bold;
+  width: 100%; /* Ensure the dialog card uses the full width */
+  max-width: 400px; /* Optional: to limit maximum width */
+  margin: auto;
 }
 
 .card-actions {
   display: flex;
-  flex-wrap: wrap; /* Allow buttons to wrap */
-  align-items: center;
-  padding: 16px;
   justify-content: space-between;
-}
-
-.prev-btn, .next-btn, .create-btn, .close-btn {
-  border-radius: 20px;
-  margin: 5px; /* Reduced margin for smaller screens */
-  padding: 8px 16px;
-  transition: background-color 0.3s, transform 0.3s; /* Smooth transition for background and transform */
-}
-
-.prev-btn {
-  margin-right: auto; /* Pushes the button to the left */
-}
-
-.next-btn {
-  margin-left: auto; /* Pushes the button to the right */
-}
-
-.create-btn {
-  background-color: #4CAF50; /* Green background for Create button */
-  color: #fff;
-}
-
-.create-btn:hover {
-  background-color: #45a049; /* Darker green on hover */
-  transform: scale(1.05); /* Slightly enlarge button on hover */
-}
-
-.close-btn {
-  background-color: #f44336; /* Red background for Close button */
-  color: #fff;
-}
-
-.close-btn:hover {
-  background-color: #e53935; /* Darker red on hover */
-  transform: scale(1.05); /* Slightly enlarge button on hover */
+  align-items: center;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  gap: 10px; /* Space between buttons */
 }
 
 .spacer {
-  flex: 1; /* Spacer to push buttons apart */
+  flex: 1; /* Take up remaining space */
 }
 
-/* Responsive Design for Small Screens */
+/* Common Button Styling in Dialog */
+.prev-btn,
+.next-btn,
+.close-btn {
+  border-radius: 20px;
+  padding: 10px 20px;
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transition for background and transform */
+  background-color: #007bff; /* Simple background color */
+  color: #fff; /* White text color */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+  font-weight: bold; /* Bold text */
+}
+
+.prev-btn:hover,
+.next-btn:hover,
+.close-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: translateY(-2px); /* Slightly lift button on hover */
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
   .header {
-    flex-direction: column; /* Stack header items vertically on smaller screens */
-    align-items: flex-start;
-    padding: 10px;
-  }
-
-  .logout-container {
-    align-self: flex-end; /* Move logout button to the right */
-    margin-right: 0; /* Remove right margin */
-    margin-top: 10px; /* Margin top to separate from welcome-container */
-  }
-
-  .button-container {
-    flex-direction: column; /* Stack buttons vertically on smaller screens */
-  }
-
-  .create-user-card {
-    width: 95vw; /* Full width for small screens */
-    max-width: none; /* Remove max-width constraint */
-  }
-
-  .card-actions {
-    flex-direction: column; /* Stack action buttons vertically */
-  }
-
-  .prev-btn, .next-btn, .create-btn, .close-btn {
-    margin: 10px 0; /* Margin top and bottom for vertical stacking */
-  }
-}
-
-/* Responsive Design for Extra Small Screens */
-@media (max-width: 480px) {
-  .header {
-    flex-direction: column; /* Stack header items vertically on smaller screens */
-    align-items: flex-start; /* Align items to the start (left) */
-    padding: 10px;
+    flex-direction: column; /* Stack header content vertically on smaller screens */
+    align-items: center;
+    text-align: center;
   }
 
   .welcome-container {
-    text-align: center;
-    width: 100%;
-  }
-
-  .text-h5 {
-    font-size: 20px; /* Smaller font size for very small screens */
-  }
-
-  .text-h6 {
-    font-size: 16px; /* Smaller font size for very small screens */
-  }
-
-  .button-container {
-    flex-direction: column; /* Stack buttons vertically on smaller screens */
-    gap: 10px; /* Space between buttons */
-    width: 100%; /* Full width for the button container */
-  }
-
-  .button-style {
-    margin: 10px 10px 0; /* Top margin of 10px, side margins of 10px, and no bottom margin */
-    font-size: 14px; /* Smaller font size for buttons */
-    padding: 8px 16px; /* Reduced padding for buttons */
-  }
-
-  .create-user-card {
-    width: 95vw; /* Full width for small screens */
-    max-width: none; /* Remove max-width constraint */
-  }
-
-  .card-actions {
-    flex-direction: column; /* Stack action buttons vertically */
-  }
-
-  .prev-btn, .next-btn, .create-btn, .close-btn {
-    margin: 10px 0; /* Margin top and bottom for vertical stacking */
+    margin-bottom: 10px; /* Add space between elements */
   }
 
   .logout-container {
-    align-self: flex-end; /* Align logout icon to the right */
-    margin-top: 10px; /* Space from other items */
-    margin-right: 0; /* Remove right margin */
+    margin-right: 0; /* Remove right margin for smaller screens */
+  }
+
+  .button-container {
+    justify-content: center; /* Center buttons on smaller screens */
+  }
+
+  .card-actions {
+    flex-direction: column; /* Stack buttons vertically on smaller screens */
+    align-items: stretch; /* Stretch buttons to full width */
+  }
+
+  .prev-btn,
+  .next-btn,
+  .close-btn {
+    width: 100%; /* Full width buttons on smaller screens */
+    margin-bottom: 10px; /* Space between buttons */
   }
 }
 </style>
-

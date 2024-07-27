@@ -1,9 +1,16 @@
 <template>
   <q-layout class="tester-layout">
     <q-header elevated>
-      <q-toolbar>
-        <q-btn flat icon="arrow_back" @click="navigateHome" />
+      <q-toolbar class="toolbar">
+        <!-- Logout Button for Mobile View -->
+        <q-btn v-if="isMobileView" flat icon="logout" @click="logout" class="logout-btn-mobile" />
+
+        <!-- Navigation and Title -->
+        <q-btn v-if="!isMobileView" flat icon="arrow_back" @click="navigateHome" />
         <q-toolbar-title>Tester Dashboard</q-toolbar-title>
+        
+        <!-- Hide Logout Button on Mobile View -->
+        <q-btn v-if="!isMobileView" flat icon="logout" @click="logout" class="logout-btn-desktop" />
       </q-toolbar>
     </q-header>
 
@@ -57,8 +64,11 @@
   </q-layout>
 </template>
 
+
+
+
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBugStore } from 'stores/bugStore';
 
@@ -77,6 +87,7 @@ export default {
     });
 
     const severityOptions = ref(['Low', 'Medium', 'High']);
+    const isMobileView = ref(window.innerWidth < 768);
 
     const openBugReportForm = () => {
       showBugReportForm.value = true;
@@ -109,6 +120,25 @@ export default {
       router.push('/');
     };
 
+    const logout = () => {
+      // Handle logout logic
+      router.push('/');
+    };
+
+    const handleResize = () => {
+      isMobileView.value = window.innerWidth < 768;
+    };
+
+    onMounted(() => {
+      window.addEventListener('resize', handleResize);
+    });
+
+    watch(isMobileView, (newValue) => {
+      if (!newValue) {
+        // Additional logic for non-mobile view if needed
+      }
+    });
+
     return {
       bugs,
       showBugReportForm,
@@ -118,15 +148,22 @@ export default {
       submitBugReport,
       resetForm,
       navigateHome,
+      logout,
+      isMobileView,
     };
   },
 };
 </script>
-
 <style scoped>
 .tester-layout {
-  background-color: var(--background-color); /* Background color from global styles */
+  background: linear-gradient(135deg, #e2e2e2, #ffffff); /* Gradient background */
   min-height: 100vh;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between; /* Distribute space between items */
+  align-items: center; /* Align items vertically center */
 }
 
 .dashboard-container {
@@ -220,8 +257,19 @@ export default {
   margin-top: 16px;
 }
 
+/* Logout button styles */
+.logout-btn-mobile {
+  margin-right: auto; /* Align to left on mobile view */
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
+  .logout-btn-mobile{
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    max-width: 50px;
+  }
   .dashboard-title {
     font-size: 1.5rem;
   }
@@ -234,6 +282,17 @@ export default {
     width: 100%;
     margin-top: 8px;
   }
+
+  .logout-btn-desktop {
+    display: none; /* Hide logout button on mobile view */
+  }
+}
+
+@media (min-width: 769px) {
+  .logout-btn-mobile {
+    display: none; /* Hide logout button on desktop view */
+  }
+
 }
 
 /* CSS Variables for Color Scheme */

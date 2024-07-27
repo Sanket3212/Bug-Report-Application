@@ -22,7 +22,7 @@ export const useUserStore = defineStore('user', {
       },
       {
         username: 'developer1',
-        fullName: 'developer',
+        fullName: 'developer1',
         email: 'dev1@example.com',
         phone: '1122334455',
         designation: 'developer',

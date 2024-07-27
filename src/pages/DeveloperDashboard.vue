@@ -11,17 +11,38 @@
     <q-page-container>
       <q-page>
         <div class="bug-dashboard-container">
-          <div class="tables-container">
-            <!-- Assigned Tasks Table -->
-            <div class="tasks-container">
-              <div class="assigned-tasks-title">Assigned Tasks</div>
-              <q-table :rows="sortedBugs" :columns="allColumns" row-key="id" class="responsive-table">
-                <template v-slot:body-cell-update="props">
-                  <q-td :props="props">
-                    <q-btn class="update-btn" label="Update" @click="openUpdateDialog(props.row)" />
-                  </q-td>
-                </template>
-              </q-table>
+          <!-- Card View for Small Screens -->
+          <div v-if="!isLargeScreen">
+            <q-card v-for="bug in allBugs" :key="bug.id" class="bug-card">
+              <q-card-section>
+                <div class="text-h6">Bug</div>
+                <div class="text-subtitle2">Name: {{ bug.name }}</div>
+                <div class="text-subtitle2">Description: {{ bug.description }}</div>
+                <div class="text-caption">Severity: {{ bug.severity }}</div>
+                <div class="text-caption">Assigned Developer: {{ bug.developer || 'Unassigned' }}</div>
+                <div class="text-caption">Deadline: {{ bug.deadline }}</div>
+                <div class="text-caption">Status: {{ bug.status }}</div>
+              </q-card-section>
+              <q-card-actions>
+                <q-btn @click="openUpdateDialog(bug)" color="primary" label="Update" class="update-btn" />
+              </q-card-actions>
+            </q-card>
+          </div>
+
+          <!-- Table View for Larger Screens -->
+          <div v-if="isLargeScreen">
+            <div class="tables-container">
+              <!-- Assigned Tasks Table -->
+              <div class="tasks-container">
+                <div class="assigned-tasks-title">Assigned Tasks</div>
+                <q-table :rows="sortedBugs" :columns="allColumns" row-key="id" class="responsive-table">
+                  <template v-slot:body-cell-update="props">
+                    <q-td :props="props">
+                      <q-btn class="update-btn" label="Update" @click="openUpdateDialog(props.row)" />
+                    </q-td>
+                  </template>
+                </q-table>
+              </div>
             </div>
           </div>
         </div>
@@ -61,16 +82,17 @@ export default {
     const userStore = useUserStore();
     const bugStore = useBugStore();
     const router = useRouter();
-    
+
     const user = userStore.currentUser;
     const showUpdateDialog = ref(false);
     const updatingBug = ref(null);
-    
+    const isLargeScreen = ref(window.innerWidth > 768); // Responsive check
+
     const statusOptions = [
       { label: 'Pending', value: 'Pending' },
       { label: 'Complete', value: 'Complete' },
     ];
-    
+
     const severityOptions = ['Low', 'Medium', 'High'];
 
     const allColumns = [
@@ -81,10 +103,13 @@ export default {
       { name: 'deadline', align: 'left', label: 'Deadline', field: 'deadline' },
       { name: 'update', align: 'center', label: 'Update', field: 'update' },
     ];
-    
+
+    const allBugs = computed(() => {
+      return bugStore.bugs.filter(bug => bug.developer === user.username);
+    });
+
     const sortedBugs = computed(() => {
-      const bugs = bugStore.bugs.filter(bug => bug.developer === user.username);
-      return bugs.sort((a, b) => {
+      return allBugs.value.sort((a, b) => {
         if (a.status === 'Complete' && b.status !== 'Complete') {
           return 1;
         } else if (a.status !== 'Complete' && b.status === 'Complete') {
@@ -93,29 +118,35 @@ export default {
         return 0;
       });
     });
-    
+
     const openUpdateDialog = (bug) => {
       updatingBug.value = { ...bug };
       showUpdateDialog.value = true;
     };
-    
+
     const saveUpdatedBugStatus = () => {
       bugStore.updateBug(updatingBug.value);
       showUpdateDialog.value = false;
     };
-    
+
     const logout = () => {
       router.push('/');
     };
 
     const navigateHome = () => {
       router.push('/');
-    }
+    };
+
+    // Add watcher for responsive changes
+    window.addEventListener('resize', () => {
+      isLargeScreen.value = window.innerWidth > 768;
+    });
 
     return {
       user,
       allColumns,
       sortedBugs,
+      allBugs,
       showUpdateDialog,
       updatingBug,
       statusOptions,
@@ -124,182 +155,185 @@ export default {
       saveUpdatedBugStatus,
       logout,
       navigateHome,
+      isLargeScreen,
     };
   },
 };
 </script>
-
 <style scoped>
+/* Background */
 .background {
-  background: url('https://www.transparenttextures.com/patterns/white-diamond.png') repeat; /* Subtle pattern background */
+  background: linear-gradient(to right, #d3ffcb, #caf8cd);
   min-height: 100vh;
+  padding: 16px;
 }
 
+/* Header */
 .header {
-  background: #2754b6; /* Dark teal background */
-  color: #ffffff; /* White text color */
-  border-bottom: 2px solid #004d40; /* Darker border at the bottom */
-}
-
-.header-btn {
-  color: #ffffff; /* White color for buttons in header */
+  background-color: #ffffff;
 }
 
 .header-title {
-  font-size: 1.5rem;
   font-weight: bold;
-  color: #ffffff; /* White color for header title */
+  color: #000000;
 }
 
-.q-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1;
+.header-btn {
+  color: #050505;
 }
 
-.bug-dashboard-container {
+/* Card */
+.bug-card {
+  margin-bottom: 16px;
   padding: 16px;
-  padding-top: 64px; /* Adjust for the fixed header */
-}
-
-.tables-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.tasks-container {
-  width: 100%;
-}
-
-.assigned-tasks-title {
-  text-align: center;
-  font-size: 2rem; /* Increase font size */
-  font-weight: bold;
-  color: #004d40; /* Darker teal color for title */
-  margin-bottom: 16px; /* Space below title */
-}
-
-.responsive-table {
-  max-width: 100%;
-  overflow-x: auto; /* Allow horizontal scrolling if needed */
-}
-
-.q-table {
-  background-color: #ffffff;
   border-radius: 8px;
-  overflow: hidden;
-  font-size: 14px; /* Default font size for the table */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  transition: transform 0.3s;
 }
 
-.q-table thead {
-  background-color: #00695c; /* Dark teal background for header */
-  color: #ffffff;
-}
-
-.q-table th {
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: bold;
-}
-
-.q-table td {
-  padding: 12px 16px;
-}
-
-.q-table tbody tr {
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.q-table tbody tr:hover {
-  background-color: #f2f2f2; /* Light gray background on hover */
-  transform: scale(1.02); /* Slightly scale up the row on hover */
+.bug-card:hover {
+  transform: translateY(-4px);
 }
 
 .update-btn {
-  background-color: #4caf50; /* Green background for button */
-  color: #ffffff; /* White text color */
+  background-color: #2196f3; /* Blue background for update button */
+  color: #ffffff;
   font-weight: bold;
   transition: background-color 0.3s, transform 0.3s;
 }
 
 .update-btn:hover {
-  background-color: #388e3c; /* Darker green on hover */
-  transform: scale(1.05); /* Slightly scale up the button on hover */
+  background-color: #1976d2; /* Darker blue on hover */
+  transform: scale(1.05);
 }
 
-.q-dialog .q-card {
-  width: 90vw; /* Responsive width for mobile */
-  max-width: 600px; /* Max width for larger screens */
-  border-radius: 8px; /* Rounded corners for the card */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow */
-  background-color: #ffffff; /* Card background color */
+.delete-btn {
+  background-color: #f44336; /* Red background for delete button */
+  color: #ffffff;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
+.delete-btn:hover {
+  background-color: #c62828; /* Darker red on hover */
+  transform: scale(1.05);
+}
+
+.other-btn {
+  background-color: #ff9800; /* Orange background for other buttons */
+  color: #ffffff;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.other-btn:hover {
+  background-color: #fb8c00; /* Darker orange on hover */
+  transform: scale(1.05);
+}
+
+/* Table */
+.tables-container {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+.assigned-tasks-title {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  font-weight: bold;
+  color: #4c82af;
+}
+
+.responsive-table {
+  width: 100%;
+}
+
+.q-table th, .q-table td {
+  padding: 8px 16px;
+  border: none;
+}
+
+.q-table th {
+  background-color: #81c784;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.q-table tbody tr:hover {
+  background-color: #f1f8e9;
+}
+
+/* Dialog */
 .form-card {
-  border-radius: 8px; /* Rounded corners for the card */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  transition: transform 0.3s;
+}
+
+.form-card:hover {
+  transform: translateY(-4px);
 }
 
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .form-input {
-  background-color: #f9f9f9; /* Light gray background for inputs */
-  border-radius: 4px; /* Rounded corners for inputs */
+  margin-bottom: 16px;
+}
+
+.q-input__control {
+  border: 2px solid #81c784;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.q-input__control:focus-within {
+  border-color: #4caf50;
 }
 
 .form-radio {
-  margin-top: 8px;
+  margin-top: 16px;
 }
 
-.save-btn {
-  background-color: #1c69dd; /* Orange background for save button */
-  color: #ffffff; /* White text color */
-  font-weight: bold;
-  border: 1px solid #224aff; /* Border color to match background */
+.q-radio__inner {
+  border: 2px solid #81c784;
+  transition: border-color 0.3s;
 }
 
-.save-btn:hover {
-  background-color: #197ce6; /* Darker orange on hover */
+.q-radio__inner:focus-within {
+  border-color: #4caf50;
 }
 
 .cancel-btn {
-  color: #00695c; /* Dark teal color for cancel button */
-}
-
-.text-h6 {
-  font-size: 1.25rem;
+  background-color: #f44336; /* Red background for cancel button */
+  color: #ffffff;
   font-weight: bold;
-  color: #00695c; /* Dark teal color for header text */
+  transition: background-color 0.3s, transform 0.3s;
 }
 
-@media (max-width: 768px) {
-  .assigned-tasks-title {
-    font-size: 1.5rem; /* Smaller font size for tablets */
-  }
-
-  .q-table {
-    font-size: 12px; /* Smaller font size for tablets */
-  }
+.cancel-btn:hover {
+  background-color: #c62828; /* Darker red on hover */
+  transform: scale(1.05);
 }
 
-@media (max-width: 480px) {
-  .assigned-tasks-title {
-    font-size: 1.25rem; /* Smaller font size for phones */
-  }
+.save-btn {
+  background-color: #4caf50; /* Green background for save button */
+  color: #ffffff;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
+}
 
-  .q-table {
-    font-size: 10px; /* Smaller font size for phones */
-  }
-
-  .q-card {
-    width: 95vw;
-  }
+.save-btn:hover {
+  background-color: #388e3c; /* Darker green on hover */
+  transform: scale(1.05);
 }
 </style>
