@@ -257,8 +257,9 @@ export default {
 /* General Background */
 /* General Background */
 .background {
-  background-color: #f0f2f5;
+  background: linear-gradient(to bottom, #e0f7fa, #ffffff); 
   /* width: 1000px; */
+  padding-top: 100px;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -267,6 +268,7 @@ export default {
 
 /* Dashboard Container */
 .dashboard-container {
+  
   padding: 20px;
   width: 90%;
   width: 1000px;
@@ -279,6 +281,7 @@ export default {
 
 /* Header Styling */
 .header {
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -440,9 +443,14 @@ export default {
   flex: 1;
 }
 
+.tasks.container{
+  display: none;
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .dashboard-container {
+    padding-top: none;
     width: 100%;
     height: auto;
     padding: 10px;

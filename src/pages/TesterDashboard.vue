@@ -6,7 +6,7 @@
         <q-btn v-if="isMobileView" flat icon="logout" @click="logout" class="logout-btn-mobile" />
 
         <!-- Navigation and Title -->
-        <q-btn v-if="!isMobileView" flat icon="arrow_back" @click="navigateHome" />
+        <!-- <q-btn v-if="!isMobileView" flat icon="arrow_back" @click="navigateHome" /> -->
         <q-toolbar-title>Tester Dashboard</q-toolbar-title>
         
         <!-- Hide Logout Button on Mobile View -->
@@ -156,7 +156,7 @@ export default {
 </script>
 <style scoped>
 .tester-layout {
-  background: linear-gradient(135deg, #e2e2e2, #ffffff); /* Gradient background */
+  background: linear-gradient(to bottom, #e0f7fa, #ffffff); 
   min-height: 100vh;
 }
 

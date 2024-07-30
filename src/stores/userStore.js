@@ -29,6 +29,7 @@ export const useUserStore = defineStore('user', {
         password: '12345',
         developerId: 'D1'
       }
+      
     ],
     currentUser: null
   }),

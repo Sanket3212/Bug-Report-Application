@@ -163,7 +163,7 @@ export default {
 <style scoped>
 /* Background */
 .background {
-  background: linear-gradient(to right, #e7ffe3, #ecffed);
+  background: linear-gradient(to bottom, #e0f7fa, #ffffff); 
   min-height: 100vh;
   padding: 16px;
 }
