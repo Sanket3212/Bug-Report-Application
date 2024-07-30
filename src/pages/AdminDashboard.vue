@@ -22,6 +22,42 @@
             <q-btn color="primary" label="Show All Users" @click="showUsers" class="button-style button-show-users" />
             <q-btn color="secondary" label="See the Application" @click="goToBugDashboard" class="button-style button-see-application" />
           </div>
+          <q-card-section class="row q-col-gutter-md">
+            <div class="col-12 col-md-6 col-lg-4">
+              <q-card class="q-pa-md">
+                <q-knob
+                  v-model="pendingBugsCount"
+                  size="100px"
+                  show-value
+                  color="red"
+                  center-color="white"
+                  track-color="grey-4"
+                  thickness="0.3"
+                  value-style="font-size: 24px"
+                  readonly
+                  class="custom-knob"
+                />
+                <div class="text-center">Pending Bugs</div>
+              </q-card>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+              <q-card class="q-pa-md">
+                <q-knob
+                  v-model="completedBugsCount"
+                  size="100px"
+                  show-value
+                  color="green"
+                  center-color="white"
+                  track-color="grey-4"
+                  thickness="0.3"
+                  value-style="font-size: 24px"
+                  readonly
+                  class="custom-knob"
+                />
+                <div class="text-center">Completed Bugs</div>
+              </q-card>
+            </div>
+          </q-card-section>
           <q-dialog v-model="showUserDialog">
             <q-card>
               <q-card-section>
@@ -47,7 +83,6 @@
               </q-card-actions>
             </q-card>
           </q-dialog>
-          <!-- Dialog for creating a new user -->
           <q-dialog v-model="showCreateUserDialog" persistent>
             <q-card class="create-user-card">
               <q-card-section>
@@ -71,9 +106,11 @@
   </q-layout>
 </template>
 
+
 <script>
 import { ref, computed } from 'vue';
 import { useUserStore } from 'stores/userStore';
+import { useBugStore } from 'stores/bugStore';
 import AdminFormStep1 from 'components/AdminFormStep1.vue';
 import AdminFormStep2 from 'components/AdminFormStep2.vue';
 import AdminFormStep3 from 'components/AdminFormStep3.vue';
@@ -87,6 +124,7 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
+    const bugStore = useBugStore();
     const router = useRouter();
     const user = userStore.users.find(u => u.username === 'admin');
     const newUser = ref({
@@ -188,162 +226,240 @@ export default {
       return groups;
     });
 
+    const pendingBugsCount = computed(() => bugStore.bugs.filter(bug => bug.status === 'Pending').length);
+    const completedBugsCount = computed(() => bugStore.bugs.filter(bug => bug.status === 'Complete').length);
+    const unassignedBugsCount = computed(() => bugStore.bugs.filter(bug => bug.developer === 'Unassigned').length);
+
     return { 
       user, 
-      newUser, 
-      currentStep, 
-      nextStep, 
-      previousStep, 
-      createUser, 
-      logout, 
-      showUsers, 
+      pendingBugsCount, 
+      completedBugsCount, 
+      unassignedBugsCount, 
       showUserDialog, 
       showCreateUserDialog, 
       openCreateUserDialog, 
       closeCreateUserDialog, 
+      logout, 
+      showUsers, 
+      goToBugDashboard, 
       groupedUsers, 
-      goToBugDashboard 
+      nextStep, 
+      previousStep, 
+      createUser, 
+      currentStep, 
+      newUser 
     };
   }
 };
 </script>
 
 <style scoped>
-/* Background Color for Layout */
+/* General Background */
+/* General Background */
 .background {
-  background-color: #f4f4f4; /* Light gray background for the entire layout */
+  background-color: #f0f2f5;
+  /* width: 1000px; */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  padding: 20px;
+  width: 90%;
+  width: 1000px;
+  height: auto;
+  margin: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* Header Styling */
 .header {
-  width: 100%;
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  background-color: #007bff; /* Blue background color for header */
-  color: #fff; /* White text color */
-  padding: 10px 20px;
-  border-radius: 8px; /* Optional: for rounded corners */
+  margin-bottom: 20px;
+  background-color: #0c4bde; /* Dark blue background */
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Welcome Container Styling */
+/* Welcome Container */
 .welcome-container {
-  text-align: center;
   flex: 1;
+  text-align: left;
 }
 
 .text-h5 {
-  font-size: 24px; /* Adjusted for better responsiveness */
+  font-size: 24px;
   font-weight: bold;
+  color: #ffffff; /* White text */
+  margin: 0;
 }
 
 .text-h6 {
-  font-size: 18px; /* Adjusted for better responsiveness */
+  font-size: 18px;
+  color: #cfcfcf; /* Light grey text */
+  margin: 0;
 }
 
 .logout-container {
-  margin-right: 10px; /* Reduced margin for smaller screens */
+  display: flex;
+  align-items: center;
 }
 
 .logout-icon {
-  color: #fff; /* White icon color */
+  color: #ff4d4f; /* Red icon */
+  cursor: pointer;
+  font-size: 24px;
+  transition: color 0.3s, transform 0.3s;
 }
 
-/* Button Container Styling */
+.logout-icon:hover {
+  color: #ff1a1a; /* Darker red on hover */
+  transform: scale(1.1);
+}
+
+/* Button Container */
 .button-container {
   display: flex;
-  flex-wrap: wrap; /* Allow buttons to wrap */
   justify-content: center;
-  gap: 10px; /* Space between buttons */
-  margin-top: 20px;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 /* Button Styling */
 .button-style {
-  border-radius: 20px;
-  padding: 10px 20px;
-  transition: background-color 0.3s, transform 0.3s; /* Smooth transition for background and transform */
-  background-color: #007bff; /* Simple background color */
-  color: #fff; /* White text color */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
-  font-weight: bold; /* Bold text */
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
+  display: inline-block;
+  margin: 5px;
 }
 
-.button-style:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  transform: translateY(-2px); /* Slightly lift button on hover */
+.button-create-user {
+  background-color: #1890ff; /* Blue button */
+  color: white;
+}
+
+.button-create-user:hover {
+  background-color: #1677ff; /* Darker blue on hover */
+  transform: scale(1.05);
+}
+
+.button-show-users {
+  background-color: #52c41a; /* Green button */
+  color: white;
+}
+
+.button-show-users:hover {
+  background-color: #39a935; /* Darker green on hover */
+  transform: scale(1.05);
+}
+
+.button-see-application {
+  background-color: #faad14; /* Yellow button */
+  color: white;
+}
+
+.button-see-application:hover {
+  background-color: #e5a700; /* Darker yellow on hover */
+  transform: scale(1.05);
+}
+
+/* Knob Container */
+.knob-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+/* Knob Card Styling */
+.q-card {
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.q-knob {
+  margin: 0 auto;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.q-knob:hover {
+  transform: scale(1.05);
+}
+
+.custom-knob {
+  background: none !important;
 }
 
 /* Dialog Card Styling */
 .create-user-card {
-  width: 100%; /* Ensure the dialog card uses the full width */
-  max-width: 400px; /* Optional: to limit maximum width */
-  margin: auto;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: #ffffff;
 }
 
 .card-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-  gap: 10px; /* Space between buttons */
+}
+
+.close-btn {
+  color: #ff4d4f;
+}
+
+.prev-btn {
+  color: #1890ff;
+}
+
+.next-btn {
+  color: #52c41a;
 }
 
 .spacer {
-  flex: 1; /* Take up remaining space */
-}
-
-/* Common Button Styling in Dialog */
-.prev-btn,
-.next-btn,
-.close-btn {
-  border-radius: 20px;
-  padding: 10px 20px;
-  transition: background-color 0.3s, transform 0.3s; /* Smooth transition for background and transform */
-  background-color: #007bff; /* Simple background color */
-  color: #fff; /* White text color */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
-  font-weight: bold; /* Bold text */
-}
-
-.prev-btn:hover,
-.next-btn:hover,
-.close-btn:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  transform: translateY(-2px); /* Slightly lift button on hover */
+  flex: 1;
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+  .dashboard-container {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+  }
+
   .header {
-    flex-direction: column; /* Stack header content vertically on smaller screens */
-    align-items: center;
+    flex-direction: column;
     text-align: center;
   }
 
-  .welcome-container {
-    margin-bottom: 10px; /* Add space between elements */
-  }
-
-  .logout-container {
-    margin-right: 0; /* Remove right margin for smaller screens */
-  }
-
   .button-container {
-    justify-content: center; /* Center buttons on smaller screens */
+    flex-direction: column;
   }
 
-  .card-actions {
-    flex-direction: column; /* Stack buttons vertically on smaller screens */
-    align-items: stretch; /* Stretch buttons to full width */
-  }
-
-  .prev-btn,
-  .next-btn,
-  .close-btn {
-    width: 100%; /* Full width buttons on smaller screens */
-    margin-bottom: 10px; /* Space between buttons */
+  .q-knob.custom-knob {
+    background: none !important;
   }
 }
+
 </style>

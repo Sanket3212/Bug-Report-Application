@@ -19,12 +19,12 @@
       label="Developer ID" 
       readonly 
     />
-    <q-btn type="submit" label="Next" color="primary" />
+    <q-btn v-if="showNextButton" type="submit" label="Next" color="primary" />
   </q-form>
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useUserStore } from 'stores/userStore';
 
 export default {
@@ -46,7 +46,11 @@ export default {
       generateId(newVal);
     }, { immediate: true });
 
-    return { generateId };
+    const showNextButton = computed(() => {
+      return !!props.user.designation;
+    });
+
+    return { generateId, showNextButton };
   },
   methods: {
     nextStep() {

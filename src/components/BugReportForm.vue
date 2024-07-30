@@ -6,7 +6,7 @@
           <q-input v-model="bug.name" label="Bug Name" dense outlined />
           <q-select v-model="bug.severity" label="Severity" :options="severityOptions" outlined />
           <q-editor v-model="bug.description" label="Bug Description" dense outlined />
-          <q-btn type="submit" label="Submit" color="primary" class="q-mt-md" />
+          <q-btn v-if="canSubmit" type="submit" label="Submit" color="primary" class="q-mt-md" />
         </q-form>
       </q-card-section>
     </q-card>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
 export default {
   name: 'BugReportForm',
   props: {
@@ -29,6 +31,13 @@ export default {
       },
       severityOptions: ['Low', 'Medium', 'High'], // Example severity options
     };
+  },
+  setup() {
+    const canSubmit = computed(() => {
+      return this.bug.name && this.bug.severity && this.bug.description;
+    });
+
+    return { canSubmit };
   },
   methods: {
     submitBugReport() {

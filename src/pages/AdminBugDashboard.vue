@@ -205,6 +205,7 @@ export default {
       { name: 'description', label: 'Description', align: 'left', field: row => row.description },
       { name: 'developer', label: 'Assigned Developer', align: 'left', field: row => row.developer || 'Unassigned' },
       { name: 'deadline', label: 'Deadline', align: 'left', field: row => row.deadline },
+      { name: 'status', label: 'status', align: 'left', field: row => row.status },
       { name: 'actions', label: 'Actions', align: 'center', field: row => row }
     ];
 
@@ -248,7 +249,7 @@ export default {
     };
 
     const navigateHome = () => {
-      router.push('/');
+      router.push('/admin-dashboard');
     };
 
     const logout = () => {
